@@ -1,114 +1,229 @@
-# SoloBite
+<div align="center">
 
-**Your fridge, one plate, fully fueled.**
+# 🍳 SoloBite
 
-SoloBite is an AI-powered Progressive Web App that generates nutritionally-complete, single-portion recipes for solo diners. It calculates personalized nutrition targets, knows what's already in your pantry, and suggests meals that minimize waste and grocery spending.
+### Your fridge, one plate, fully fueled.
 
-## The Problem
+AI-powered recipes built for **one** — personalized nutrition, zero waste, zero leftovers rotting in the back of your fridge.
 
-Solo diners face a unique set of challenges that recipe apps ignore:
-- Standard recipes serve 4-6 — scaling down breaks ratios and wastes ingredients
-- Buying for one means half the vegetables rot before you use them
-- No one tracks whether Tuesday's leftover dal can become Wednesday's dal paratha
-- Generic "healthy eating" advice doesn't account for individual calorie/protein needs
+[![Next.js](https://img.shields.io/badge/Next.js_15-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-## What SoloBite Does
+---
 
-### Personalized Nutrition Onboarding
-7-step setup captures body stats, activity level, and goals. Calculates daily TDEE and per-meal macro targets using the Mifflin-St Jeor equation.
+**[Live Demo](#) · [Features](#-features) · [Quick Start](#-quick-start) · [How It Works](#-how-it-works)**
 
-### Smart Single Input
-One input field — type what you have, snap a photo of your fridge, or use voice. The AI figures out the intent and generates a recipe matched to your profile.
+</div>
 
-### Tiered Pantry System
-- **Always available** (6+ month shelf life) — rice, spices, oil
-- **Usually available** (2-4 week shelf life) — onions, garlic, tomatoes
+<br/>
 
-Drag-and-drop items between tiers. The AI won't suggest buying what you already have.
+## 😤 The Problem
 
-### Weekly Meal Planning
-Cross-optimized 7-day plans where Sunday's leftover chicken becomes Monday's sandwich filling. Generates a consolidated grocery list with estimated costs.
+Ever tried cooking for one? Here's what that looks like:
 
-### Delta Suggestions
-Every recipe shows: "Add paneer for Rs 40 to boost protein by 12g" — so you make informed trade-offs.
+| Pain Point | What Actually Happens |
+|---|---|
+| 🍲 Recipes serve 4-6 | You eat the same dal for 3 days straight |
+| 🥬 Buying for one | Half your veggies rot before you touch them |
+| 📊 "Eat healthy" advice | Generic. Doesn't know your weight, goals, or that you hate baingan |
+| 🧮 Calorie tracking | A separate app, separate effort, separate headache |
+| 🤔 "What to cook?" fatigue | Decision paralysis at 8 PM after a long day |
 
-## Tech Stack
+**SoloBite fixes all of this in one app.**
 
-- **Framework:** Next.js 15 (App Router, TypeScript)
-- **Styling:** Tailwind CSS 4
-- **AI:** OpenRouter API (Gemini 2.0 Flash)
-- **Video:** YouTube Data API v3
-- **Storage:** localStorage (no backend DB)
-- **Deployment:** Vercel
+<br/>
 
-## Getting Started
+## ✨ Features
+
+### 🎯 Personalized Nutrition Engine
+> Not generic "2000 cal/day" advice
+
+7-step onboarding captures your body stats, activity level, and goals. Calculates **your** daily TDEE and per-meal macro targets using the Mifflin-St Jeor equation.
+
+### 💬 One Smart Input
+> Type. Snap. Speak. Done.
+
+```
+"I have eggs and some leftover rice"     → Egg fried rice (single portion)
+📸 Photo of your fridge                   → Recipe from what it sees
+🎤 "Something quick with high protein"   → 15-min paneer bhurji
+```
+
+No mode selection. No 20 questions. The AI figures out what you need.
+
+### 🏪 Tiered Pantry System
+> Because you won't type "salt" every time
+
+| Tier | Examples | Shelf Life |
+|------|----------|-----------|
+| 🟢 **Always have** | Rice, oil, spices, dal | 6+ months |
+| 🟡 **Usually have** | Onions, garlic, tomatoes | 2-4 weeks |
+
+Drag-and-drop items between tiers during onboarding. The AI won't ask you to buy what's already in your kitchen.
+
+### 📅 Weekly Meal Planning
+> Sunday's leftover chicken → Monday's sandwich filling
+
+Cross-optimized 7-day plans where ingredients thread across meals. Comes with a consolidated grocery list and estimated costs.
+
+### 💡 Delta Suggestions
+> Every recipe tells you what's possible
+
+```
+"Add paneer (+₹40) → +12g protein"
+"Swap rice for quinoa → -80 cal, +6g protein"
+```
+
+Small upgrades, informed trade-offs.
+
+### 🎥 YouTube Integration
+Every recipe links to relevant cooking videos so you can watch along while you cook.
+
+<br/>
+
+## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+
-- OpenRouter API key ([get one here](https://openrouter.ai/keys))
-- YouTube Data API key (optional, for recipe videos)
+- [OpenRouter API key](https://openrouter.ai/keys) (free tier available)
+- YouTube Data API key *(optional)*
 
 ### Setup
 
 ```bash
+# Clone the repo
 git clone https://github.com/rashis-git/SoloBite.git
 cd SoloBite
+
+# Install dependencies
 npm install
+
+# Set up environment variables
+cp .env.example .env.local
 ```
 
-Create a `.env.local` file:
-
+Add your keys to `.env.local`:
+```env
+OPENROUTER_API_KEY=your_key_here
+YOUTUBE_API_KEY=your_key_here
 ```
-OPENROUTER_API_KEY=your_openrouter_key
-YOUTUBE_API_KEY=your_youtube_key
-```
-
-Run the dev server:
 
 ```bash
+# Run it
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open **http://localhost:3000** and start cooking! 🎉
 
-### Demo Mode
+> **💡 No API key?** SoloBite falls back to built-in demo recipes — the app always works.
 
-If no API key is configured or the AI call fails, SoloBite falls back to built-in demo recipes so the app always works.
+<br/>
 
-## Project Structure
+## 🔧 How It Works
+
+```
+┌─────────────────────────────────────────────────┐
+│                  ONBOARDING                      │
+│  Name → Body Stats → Activity → Diet →           │
+│  Kitchen → Pantry (drag & drop) → Targets        │
+└──────────────────────┬──────────────────────────┘
+                       ▼
+┌─────────────────────────────────────────────────┐
+│               HOME SCREEN                        │
+│                                                  │
+│  ┌──────────────────────────────────┐           │
+│  │  💬 What do you have? / 📸 / 🎤  │           │
+│  └──────────────────────────────────┘           │
+│                                                  │
+│  ⚡ Quick  💪 Protein  🍲 Comfort  🎲 Surprise  │
+│                                                  │
+│  🥡 Got leftovers? [Dal] [Rice] [Roti] [+]      │
+│                                                  │
+│  📅 Plan My Week                                 │
+└──────────────────────┬──────────────────────────┘
+                       ▼
+┌─────────────────────────────────────────────────┐
+│              AI RECIPE ENGINE                    │
+│                                                  │
+│  User input + Profile + Pantry + Time of day     │
+│          → OpenRouter (Gemini Flash)             │
+│          → Personalized single-portion recipe    │
+│          → Nutrition rings + Delta suggestions   │
+│          → YouTube video links                   │
+└─────────────────────────────────────────────────┘
+```
+
+<br/>
+
+## 📁 Project Structure
 
 ```
 src/
-  app/
-    api/
-      detect-ingredients/   # Image -> ingredient list (vision AI)
-      generate-recipe/      # Profile + input -> single recipe
-      plan-week/            # Profile + prefs -> 7-day meal plan
-      search-videos/        # Recipe name -> YouTube links
-    page.tsx                # Entry point (onboarding or home)
-  components/
-    OnboardingWizard.tsx    # 7-step nutrition setup
-    HomeScreen.tsx          # Smart input + quick picks + leftovers
-    RecipeCard.tsx          # Recipe display with nutrition rings
-    WeeklyPlanView.tsx      # Meal plan + grocery list + ingredient threads
-    NutritionRing.tsx       # SVG ring visualization
-  lib/
-    ai-client.ts            # OpenRouter API wrapper
-    prompts.ts              # AI prompt templates
-    nutrition.ts            # TDEE/BMR calculator
-    pantry-defaults.ts      # Pantry staples by cuisine palette
-    demo-data.ts            # Fallback demo recipes
-    types.ts                # TypeScript interfaces
-    storage.ts              # localStorage helpers
+├── app/
+│   ├── api/
+│   │   ├── detect-ingredients/   🖼️  Image → ingredient list
+│   │   ├── generate-recipe/      🍽️  Profile + input → recipe
+│   │   ├── plan-week/            📅  7-day cross-optimized plan
+│   │   └── search-videos/        🎥  Recipe → YouTube links
+│   └── page.tsx                  🏠  Entry point
+├── components/
+│   ├── OnboardingWizard.tsx      📋  7-step nutrition setup
+│   ├── HomeScreen.tsx            🏠  Smart input + quick picks
+│   ├── RecipeCard.tsx            🍳  Recipe with nutrition rings
+│   ├── WeeklyPlanView.tsx        📅  Meal plan + grocery list
+│   └── NutritionRing.tsx         🔴  SVG ring visualization
+└── lib/
+    ├── ai-client.ts              🤖  OpenRouter API wrapper
+    ├── prompts.ts                💬  AI prompt templates
+    ├── nutrition.ts              📊  TDEE/BMR calculator
+    ├── pantry-defaults.ts        🏪  Staples by cuisine palette
+    ├── demo-data.ts              🎭  Fallback demo recipes
+    ├── types.ts                  📝  TypeScript interfaces
+    └── storage.ts                💾  localStorage helpers
 ```
 
-## Deploy to Vercel
+<br/>
+
+## 🛠️ Tech Stack
+
+| Layer | Technology | Why |
+|-------|-----------|-----|
+| **Framework** | Next.js 15 (App Router) | SSR + API routes in one project |
+| **Language** | TypeScript | Type safety across the stack |
+| **Styling** | Tailwind CSS 4 | Rapid UI with zero CSS files |
+| **AI** | OpenRouter → Gemini 2.0 Flash | Fast, cheap, multimodal (text + images) |
+| **Videos** | YouTube Data API v3 | Recipe video search |
+| **Storage** | localStorage | No backend needed for MVP |
+| **Deploy** | Vercel | One-click from GitHub |
+
+<br/>
+
+## 🚢 Deploy to Vercel
 
 1. Push to GitHub
-2. Import the repo on [vercel.com/new](https://vercel.com/new)
-3. Add environment variables (`OPENROUTER_API_KEY`, `YOUTUBE_API_KEY`)
-4. Deploy
+2. Import repo on [vercel.com/new](https://vercel.com/new)
+3. Add environment variables:
+   - `OPENROUTER_API_KEY`
+   - `YOUTUBE_API_KEY`
+4. Deploy ✅
 
-## License
+<br/>
 
-MIT
+## 📄 License
+
+MIT — do whatever you want with it.
+
+<br/>
+
+<div align="center">
+
+---
+
+Built with ☕ and too many solo dinners.
+
+**[⬆ Back to top](#-solobite)**
+
+</div>
