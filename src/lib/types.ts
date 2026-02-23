@@ -11,7 +11,7 @@ export interface UserProfile {
   dislikes: string[];
   mealsPerDay: number;
   cookingEquipment: string[];
-  foodPalette: 'indian' | 'south-indian' | 'continental' | 'mixed';
+  foodPalette: string[];
   pantryAlways: string[];   // Always available (6+ month shelf life)
   pantryUsually: string[];  // Usually available (2-4 week shelf life)
   dailyCalories: number;
@@ -104,3 +104,12 @@ export type OnboardingStep =
   | 'kitchen-setup'
   | 'pantry-review'
   | 'targets-review';
+
+export type CuisineOption = 'indian' | 'south-indian' | 'continental' | 'mixed';
+
+export const CUISINE_OPTIONS: { value: CuisineOption; label: string }[] = [
+  { value: 'indian', label: 'Indian' },
+  { value: 'south-indian', label: 'South Indian' },
+  { value: 'continental', label: 'Continental' },
+  { value: 'mixed', label: 'Mixed / Global' },
+];

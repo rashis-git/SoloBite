@@ -1,6 +1,21 @@
 import { UserProfile } from './types';
 import { getMealTypeFromTime, getTimeOfDay } from './nutrition';
 
+function getDietaryDescription(pref: string): string {
+  switch (pref) {
+    case 'veg':
+      return 'Vegetarian (Indian definition: NO eggs, NO meat, NO fish, NO seafood. Dairy and paneer are OK.)';
+    case 'vegan':
+      return 'Vegan (NO dairy, NO eggs, NO meat, NO fish, NO honey. Only plant-based ingredients.)';
+    case 'egg':
+      return 'Eggetarian (Eggs are OK. NO meat, NO fish, NO seafood. Dairy and paneer are OK.)';
+    case 'nonveg':
+      return 'Non-vegetarian (All ingredients allowed including meat, fish, eggs, dairy.)';
+    default:
+      return pref;
+  }
+}
+
 export function buildRecipePrompt(
   profile: UserProfile,
   userInput: string,
@@ -16,10 +31,11 @@ export function buildRecipePrompt(
 USER PROFILE:
 - Name: ${profile.name}
 - Per-meal nutrition targets: ~${profile.perMealCalories} cal, ${profile.perMealProtein}g protein, ${profile.perMealCarbs}g carbs, ${profile.perMealFat}g fat
-- Dietary preference: ${profile.dietaryPreference}
+- Dietary preference: ${getDietaryDescription(profile.dietaryPreference)}
 - Allergies (NEVER include these): ${profile.allergies.length > 0 ? profile.allergies.join(', ') : 'None'}
 - Dislikes (avoid if possible): ${profile.dislikes.length > 0 ? profile.dislikes.join(', ') : 'None'}
 - Cooking equipment available: ${profile.cookingEquipment.join(', ')}
+- Cuisine preferences: ${profile.foodPalette.join(', ')}
 - Servings needed: ${servingCount}
 
 PANTRY STAPLES (always available, don't need to list as "to buy"):
@@ -42,6 +58,8 @@ INSTRUCTIONS:
 5. If the user gave mood/constraint ("something quick", "high protein"), optimize for that.
 6. Keep instructions in plain, simple language. No chef jargon (no "julienne", "deglaze", "blanch" — say "cut thin", "add liquid and stir", "boil briefly").
 7. Only use recipes possible with the user's cooking equipment.
+8. CRITICAL — NO ADVANCE PREP: This is an immediate "cook now" recipe. Do NOT suggest recipes that require overnight soaking, overnight marinating, fermenting, dough resting for hours, or any preparation done hours/days in advance. The user wants to cook and eat within the next hour. Examples of what to AVOID: moong dal chilla (needs soaked dal), idli/dosa batter (needs fermentation), overnight oats, marinated tandoori (needs hours).
+9. DIETARY PREFERENCE IS THE HIGHEST PRIORITY FILTER. It overrides cuisine preferences. If the user is "veg" and selected "continental" cuisine, suggest continental dishes that are vegetarian (pasta, risotto, salads) — NEVER add eggs or meat just because the cuisine typically uses them.
 
 RESPOND IN THIS EXACT JSON FORMAT:
 {
@@ -90,16 +108,29 @@ export function buildWeeklyPlanPrompt(
   if (profile.mealsPerDay >= 3) mealTypes.push('dinner');
   if (profile.mealsPerDay >= 4) mealTypes.push('snack');
 
+  // Generate actual day names starting from today
+  const today = new Date();
+  const dayNames = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    dayNames.push(d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' }));
+  }
+
   return `You are SoloBite, an AI meal companion for solo diners. Generate a 7-day meal plan.
+
+TODAY'S DATE: ${today.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+PLAN DAYS: ${dayNames.join(', ')}
 
 USER PROFILE:
 - Name: ${profile.name}
 - Daily nutrition targets: ${profile.dailyCalories} cal, ${profile.dailyProtein}g protein, ${profile.dailyCarbs}g carbs, ${profile.dailyFat}g fat
 - Per-meal targets: ~${profile.perMealCalories} cal, ${profile.perMealProtein}g protein
-- Dietary preference: ${profile.dietaryPreference}
+- Dietary preference: ${getDietaryDescription(profile.dietaryPreference)}
 - Allergies (NEVER include): ${profile.allergies.length > 0 ? profile.allergies.join(', ') : 'None'}
 - Dislikes (avoid): ${profile.dislikes.length > 0 ? profile.dislikes.join(', ') : 'None'}
 - Cooking equipment: ${profile.cookingEquipment.join(', ')}
+- Cuisine preferences: ${profile.foodPalette.join(', ')}
 - Meals per day: ${profile.mealsPerDay} (${mealTypes.join(', ')})
 
 PANTRY STAPLES (always available):
@@ -114,14 +145,16 @@ ${preferences ? `USER PREFERENCES FOR THIS WEEK: ${preferences}` : ''}
 ${weeklyBudget ? `WEEKLY GROCERY BUDGET: Rs ${weeklyBudget}` : ''}
 
 CRITICAL RULES:
-1. Generate meals for 7 days (Monday to Sunday), ${profile.mealsPerDay} meals per day.
+1. Generate meals for 7 days starting from today (use the exact day names from PLAN DAYS above), ${profile.mealsPerDay} meals per day.
 2. Each meal must be for 1 person.
-3. CROSS-OPTIMIZE INGREDIENTS: If a recipe uses half an avocado on Monday, use the other half on Tuesday. Buy 500g chicken and use across 2-3 meals. Perishable items must be used within their shelf life.
+3. CROSS-OPTIMIZE INGREDIENTS: If a recipe uses half an avocado on Day 1, use the other half on Day 2. Buy 500g chicken and use across 2-3 meals. Perishable items must be used within their shelf life.
 4. Each meal should aim for the per-meal nutrition targets.
 5. VARIETY: Don't repeat the same recipe. Vary cooking styles, flavors, and ingredients across the week.
 6. Keep recipes simple (under 30 min most days, one complex recipe on weekend is OK).
 7. The grocery list should be EXACT quantities for 1 person for the week. Don't overbuy.
 8. Estimate costs in INR based on average Indian urban market prices.
+9. DIETARY PREFERENCE IS THE HIGHEST PRIORITY FILTER. It overrides cuisine preferences. If the user is "veg" and selected "continental" cuisine, suggest continental dishes that are vegetarian — NEVER add eggs or meat just because the cuisine typically uses them.
+10. Advance prep is OK in weekly plans: recipes that need overnight soaking, marinating, or fermenting can be included since the user can plan ahead. Just mention the advance prep step clearly (e.g., "Soak dal the night before").
 
 RESPOND IN THIS EXACT JSON FORMAT:
 {

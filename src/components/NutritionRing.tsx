@@ -25,9 +25,16 @@ export default function NutritionRing({ label, value, target, unit, color, size 
   const colors = colorMap[color] || colorMap.green;
 
   return (
-    <div className="flex flex-col items-center">
+    <div
+      className="flex flex-col items-center"
+      role="meter"
+      aria-label={`${label}: ${value} ${unit === 'cal' ? 'calories' : `grams of ${label.toLowerCase()}`} of ${target} target`}
+      aria-valuenow={value}
+      aria-valuemin={0}
+      aria-valuemax={target}
+    >
       <div className="relative" style={{ width: size, height: size }}>
-        <svg width={size} height={size} className="-rotate-90">
+        <svg width={size} height={size} className="-rotate-90" aria-hidden="true">
           {/* Background ring */}
           <circle
             cx={size / 2}

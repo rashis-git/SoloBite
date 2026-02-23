@@ -5,6 +5,7 @@ import { UserProfile, Recipe } from '@/lib/types';
 import { QUICK_PICKS, COMMON_LEFTOVERS } from '@/lib/pantry-defaults';
 import RecipeCard from './RecipeCard';
 import WeeklyPlanView from './WeeklyPlanView';
+import PWAInstallBanner from './PWAInstallBanner';
 
 interface HomeScreenProps {
   profile: UserProfile;
@@ -166,6 +167,13 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
     }
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   // Home screen
   if (viewMode === 'home') {
     return (
@@ -174,12 +182,13 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-stone-900">SoloBite</h1>
-            <p className="text-sm text-stone-500">Hey {profile.name}! What are we cooking?</p>
+            <p className="text-sm text-stone-500">{getGreeting()}, {profile.name}!</p>
           </div>
           <button
             onClick={onEditProfile}
-            className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 hover:bg-stone-200 text-sm"
+            className="w-11 h-11 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 hover:bg-stone-200 text-base transition-colors"
             title="Settings"
+            aria-label="Settings"
           >
             &#9881;
           </button>
@@ -191,7 +200,7 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
             <textarea
               value={inputText}
               onChange={e => setInputText(e.target.value)}
-              placeholder='Type ingredients, a dish name, or how you feel...&#10;"eggs, tomato, onion" or "I want pasta" or "something quick"'
+              placeholder='eggs, tomato, onion... or just "something quick"'
               className="w-full px-4 py-3 rounded-2xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none text-sm resize-none min-h-[80px] bg-white"
               onKeyDown={e => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -213,14 +222,14 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isGenerating}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-stone-200 rounded-xl text-sm text-stone-600 hover:bg-stone-50 transition-all disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-2 py-3 min-h-[44px] bg-white border border-stone-200 rounded-xl text-sm text-stone-600 hover:bg-stone-50 transition-all disabled:opacity-50"
             >
               <span>📷</span> Upload Photo
             </button>
             <button
               onClick={handleVoiceInput}
               disabled={isGenerating || isListening}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 border rounded-xl text-sm transition-all disabled:opacity-50 ${
+              className={`flex-1 flex items-center justify-center gap-2 py-3 min-h-[44px] border rounded-xl text-sm transition-all disabled:opacity-50 ${
                 isListening
                   ? 'bg-red-50 border-red-300 text-red-600'
                   : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50'
@@ -234,9 +243,14 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
             <button
               onClick={handleSubmit}
               disabled={isGenerating}
-              className="w-full py-3 bg-brand-500 text-white font-semibold rounded-xl hover:bg-brand-600 transition-all active:scale-[0.98] disabled:opacity-50"
+              className="w-full py-3.5 bg-brand-500 text-white font-semibold rounded-xl hover:bg-brand-600 transition-all active:scale-[0.98] disabled:opacity-50"
             >
-              {isGenerating ? 'Generating...' : 'Generate Recipe'}
+              {isGenerating ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="spinner spinner-sm spinner-white" />
+                  Generating...
+                </span>
+              ) : 'Generate Recipe'}
             </button>
           )}
         </div>
@@ -245,12 +259,12 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
         {inputText.trim() && (
           <div className="flex items-center gap-3">
             <span className="text-sm text-stone-500">Cooking for:</span>
-            <div className="flex gap-1">
+            <div className="flex gap-2">
               {[1, 2, 3, 4].map(n => (
                 <button
                   key={n}
                   onClick={() => setServingCount(n)}
-                  className={`w-8 h-8 rounded-full text-sm font-medium transition-all ${
+                  className={`w-11 h-11 rounded-full text-sm font-medium transition-all ${
                     servingCount === n
                       ? 'bg-brand-500 text-white'
                       : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
@@ -272,7 +286,7 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
                 key={pick.id}
                 onClick={() => handleQuickPick(pick.prompt)}
                 disabled={isGenerating}
-                className="px-3 py-2 bg-white border border-stone-200 rounded-full text-sm text-stone-600 hover:bg-brand-50 hover:border-brand-200 hover:text-brand-700 transition-all disabled:opacity-50"
+                className="px-4 py-2.5 min-h-[44px] bg-white border border-stone-200 rounded-full text-sm text-stone-600 hover:bg-brand-50 hover:border-brand-200 hover:text-brand-700 transition-all disabled:opacity-50"
               >
                 {pick.icon} {pick.label}
               </button>
@@ -300,7 +314,7 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
                   <button
                     key={item}
                     onClick={() => toggleLeftover(item)}
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                    className={`px-3 py-2 rounded-full text-xs font-medium transition-all ${
                       leftovers.includes(item)
                         ? 'bg-warm-500 text-white'
                         : 'bg-white text-stone-600 border border-stone-200'
@@ -313,7 +327,7 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
               {leftovers.length > 0 && (
                 <button
                   onClick={() => generateRecipe(`repurpose these leftovers: ${leftovers.join(', ')}`, [], leftovers)}
-                  className="w-full py-2 bg-warm-500 text-white text-sm font-medium rounded-xl hover:bg-warm-600 transition-all"
+                  className="w-full py-3 bg-warm-500 text-white text-sm font-medium rounded-xl hover:bg-warm-600 transition-all min-h-[44px]"
                 >
                   Find recipes for leftovers
                 </button>
@@ -335,6 +349,8 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
             {error}
           </div>
         )}
+
+        <PWAInstallBanner />
       </div>
     );
   }
@@ -349,7 +365,7 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
             setRecipe(null);
             setError('');
           }}
-          className="text-sm text-brand-600 font-medium"
+          className="inline-flex items-center gap-1 text-sm text-brand-600 font-medium py-2 px-1 -ml-1 min-h-[44px]"
         >
           &larr; Back
         </button>
@@ -387,7 +403,7 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
       <div className="px-5 py-6 space-y-5">
         <button
           onClick={() => setViewMode('home')}
-          className="text-sm text-brand-600 font-medium"
+          className="inline-flex items-center gap-1 text-sm text-brand-600 font-medium py-2 px-1 -ml-1 min-h-[44px]"
         >
           &larr; Back
         </button>
@@ -437,7 +453,12 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
             disabled={isGeneratingWeekly}
             className="w-full py-3.5 bg-brand-500 text-white font-semibold rounded-xl hover:bg-brand-600 transition-all active:scale-[0.98] disabled:opacity-50"
           >
-            {isGeneratingWeekly ? 'Generating your week...' : 'Generate Weekly Plan'}
+            {isGeneratingWeekly ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="spinner spinner-sm spinner-white" />
+                Generating your week...
+              </span>
+            ) : 'Generate Weekly Plan'}
           </button>
         </div>
 
@@ -457,18 +478,16 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
             setViewMode('home');
             setWeeklyPlan(null);
           }}
-          className="text-sm text-brand-600 font-medium"
+          className="inline-flex items-center gap-1 text-sm text-brand-600 font-medium py-2 px-1 -ml-1 min-h-[44px]"
         >
           &larr; Back
         </button>
         {isGeneratingWeekly ? (
           <div className="text-center py-12 space-y-4">
             <div className="text-4xl animate-gentle-pulse">📅</div>
+            <div className="spinner mx-auto" />
             <p className="text-stone-600 font-medium">Planning your week...</p>
             <p className="text-sm text-stone-400">Cross-optimizing ingredients across {profile.mealsPerDay * 7} meals</p>
-            <div className="w-48 mx-auto bg-stone-200 rounded-full h-1.5 overflow-hidden">
-              <div className="bg-brand-500 h-full rounded-full animate-[fillRing_3s_ease-in-out_infinite]" style={{ width: '60%' }} />
-            </div>
           </div>
         ) : weeklyPlan ? (
           <WeeklyPlanView plan={weeklyPlan} profile={profile} />

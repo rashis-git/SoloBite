@@ -11,6 +11,19 @@ interface WeeklyPlanViewProps {
 export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
   const [activeTab, setActiveTab] = useState<'meals' | 'grocery' | 'threads'>('meals');
   const [expandedMeal, setExpandedMeal] = useState<string | null>(null);
+  const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+
+  const toggleGroceryItem = (itemKey: string) => {
+    setCheckedItems(prev => {
+      const next = new Set(prev);
+      if (next.has(itemKey)) {
+        next.delete(itemKey);
+      } else {
+        next.add(itemKey);
+      }
+      return next;
+    });
+  };
 
   const toggleMeal = (key: string) => {
     setExpandedMeal(expandedMeal === key ? null : key);
@@ -35,7 +48,7 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+            className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${
               activeTab === tab.id
                 ? 'bg-white text-stone-900 shadow-sm'
                 : 'text-stone-500 hover:text-stone-700'
@@ -136,6 +149,12 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
             <p className="text-xs text-brand-600">Estimated total for the week</p>
           </div>
 
+          {checkedItems.size > 0 && (
+            <p className="text-xs text-stone-400 text-center">
+              {checkedItems.size} of {plan.groceryList.length} items checked off
+            </p>
+          )}
+
           {/* Group by category */}
           {['vegetables', 'fruits', 'protein', 'dairy', 'grains', 'pantry', 'other'].map(category => {
             const items = plan.groceryList.filter(item => item.category === category);
@@ -147,18 +166,37 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
                   <h4 className="text-sm font-semibold text-stone-700 capitalize">{category}</h4>
                 </div>
                 <ul className="divide-y divide-stone-50">
-                  {items.map((item, i) => (
-                    <li key={i} className="px-4 py-2.5 flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-stone-700">{item.name}</p>
-                        <p className="text-xs text-stone-400">{item.quantity}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-medium text-stone-700">Rs {item.estimatedCost}</p>
-                        <p className="text-xs text-stone-400">{item.usedInMeals.length} meals</p>
-                      </div>
-                    </li>
-                  ))}
+                  {items.map((item, i) => {
+                    const itemKey = `${category}-${item.name}`;
+                    const isChecked = checkedItems.has(itemKey);
+                    return (
+                      <li key={i} className="px-4 py-2.5 flex items-center gap-3">
+                        <button
+                          onClick={() => toggleGroceryItem(itemKey)}
+                          className="w-6 h-6 rounded-lg border-2 flex-shrink-0 flex items-center justify-center transition-all"
+                          style={{
+                            borderColor: isChecked ? '#22c55e' : '#d6d3d1',
+                            backgroundColor: isChecked ? '#22c55e' : 'transparent',
+                          }}
+                          aria-label={`Mark ${item.name} as ${isChecked ? 'not bought' : 'bought'}`}
+                        >
+                          {isChecked && (
+                            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </button>
+                        <div className={`flex-1 min-w-0 ${isChecked ? 'opacity-50' : ''}`}>
+                          <p className={`text-sm text-stone-700 ${isChecked ? 'line-through' : ''}`}>{item.name}</p>
+                          <p className="text-xs text-stone-400">{item.quantity}</p>
+                        </div>
+                        <div className={`text-right flex-shrink-0 ${isChecked ? 'opacity-50' : ''}`}>
+                          <p className="text-sm font-medium text-stone-700">Rs {item.estimatedCost}</p>
+                          <p className="text-xs text-stone-400">{item.usedInMeals.length} meals</p>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             );

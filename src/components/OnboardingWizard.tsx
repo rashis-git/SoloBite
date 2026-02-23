@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { UserProfile, OnboardingStep } from '@/lib/types';
+import { UserProfile, OnboardingStep, CUISINE_OPTIONS } from '@/lib/types';
 import { calculateTDEE, calculatePerMealTargets } from '@/lib/nutrition';
 import { PANTRY_DEFAULTS, COMMON_ALLERGIES, COMMON_DISLIKES, COOKING_EQUIPMENT } from '@/lib/pantry-defaults';
-import { saveProfile } from '@/lib/storage';
+import { upsertProfile } from '@/lib/storage';
 
 interface OnboardingWizardProps {
   onComplete: (profile: UserProfile) => void;
@@ -35,7 +35,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
   const [dislikes, setDislikes] = useState<string[]>([]);
   const [customDislike, setCustomDislike] = useState('');
   const [mealsPerDay, setMealsPerDay] = useState(3);
-  const [foodPalette, setFoodPalette] = useState<'indian' | 'south-indian' | 'continental' | 'mixed'>('indian');
+  const [foodPalette, setFoodPalette] = useState<string[]>(['indian']);
   const [cookingEquipment, setCookingEquipment] = useState<string[]>(
     COOKING_EQUIPMENT.filter(e => e.default).map(e => e.label)
   );
@@ -55,10 +55,18 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
 
   const handleNext = () => {
     if (currentStep === 4) {
-      // After kitchen setup, populate pantry defaults
-      const defaults = PANTRY_DEFAULTS[foodPalette];
-      setPantryAlways(defaults.always);
-      setPantryUsually(defaults.usually);
+      // After kitchen setup, merge pantry defaults from all selected cuisines
+      const allAlways = new Set<string>();
+      const allUsually = new Set<string>();
+      foodPalette.forEach(cuisine => {
+        const defaults = PANTRY_DEFAULTS[cuisine];
+        if (defaults) {
+          defaults.always.forEach(item => allAlways.add(item));
+          defaults.usually.forEach(item => allUsually.add(item));
+        }
+      });
+      setPantryAlways(Array.from(allAlways));
+      setPantryUsually(Array.from(allUsually));
     }
     setCurrentStep(prev => Math.min(prev + 1, STEPS.length - 1));
   };
@@ -67,7 +75,10 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     setCurrentStep(prev => Math.max(prev - 1, 0));
   };
 
-  const handleFinish = () => {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleFinish = async () => {
+    setIsSaving(true);
     const profile: UserProfile = {
       name,
       age,
@@ -88,7 +99,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
       ...perMeal,
       onboardingComplete: true,
     };
-    saveProfile(profile);
+    await upsertProfile(profile);
+    setIsSaving(false);
     onComplete(profile);
   };
 
@@ -276,7 +288,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                   <button
                     key={a}
                     onClick={() => toggleItem(allergies, setAllergies, a)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    className={`px-3 py-2 rounded-full text-xs font-medium transition-all ${
                       allergies.includes(a)
                         ? 'bg-red-100 text-red-700 border border-red-300'
                         : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
@@ -322,7 +334,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                   <button
                     key={d}
                     onClick={() => toggleItem(dislikes, setDislikes, d)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    className={`px-3 py-2 rounded-full text-xs font-medium transition-all ${
                       dislikes.includes(d)
                         ? 'bg-warm-100 text-warm-600 border border-warm-500'
                         : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
@@ -369,25 +381,26 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               <h2 className="text-xl font-bold text-stone-900">Your kitchen</h2>
             </div>
             <div>
-              <label className="block text-sm font-medium text-stone-600 mb-2">Food palette</label>
-              <p className="text-xs text-stone-400 mb-2">We&apos;ll auto-set your pantry staples based on this</p>
+              <label className="block text-sm font-medium text-stone-600 mb-2">Cuisines you enjoy</label>
+              <p className="text-xs text-stone-400 mb-2">Select all that apply — we&apos;ll set pantry staples from your choices</p>
               <div className="grid grid-cols-2 gap-2">
-                {[
-                  { value: 'indian' as const, label: 'Indian' },
-                  { value: 'south-indian' as const, label: 'South Indian' },
-                  { value: 'continental' as const, label: 'Continental' },
-                  { value: 'mixed' as const, label: 'Mixed / Global' },
-                ].map(opt => (
+                {CUISINE_OPTIONS.map(opt => (
                   <button
                     key={opt.value}
-                    onClick={() => setFoodPalette(opt.value)}
+                    onClick={() => {
+                      setFoodPalette(prev =>
+                        prev.includes(opt.value)
+                          ? prev.filter(v => v !== opt.value)
+                          : [...prev, opt.value]
+                      );
+                    }}
                     className={`px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                      foodPalette === opt.value
+                      foodPalette.includes(opt.value)
                         ? 'bg-brand-500 text-white'
                         : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                     }`}
                   >
-                    {opt.label}
+                    {foodPalette.includes(opt.value) && '\u2713 '}{opt.label}
                   </button>
                 ))}
               </div>
@@ -399,7 +412,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                   <button
                     key={eq.id}
                     onClick={() => toggleItem(cookingEquipment, setCookingEquipment, eq.label)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    className={`px-3 py-2 rounded-full text-xs font-medium transition-all ${
                       cookingEquipment.includes(eq.label)
                         ? 'bg-brand-100 text-brand-700 border border-brand-300'
                         : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
@@ -432,9 +445,15 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
         );
 
       case 'pantry-review':
-        const defaults = PANTRY_DEFAULTS[foodPalette];
-        const currentAlways = pantryAlways.length > 0 ? pantryAlways : defaults.always;
-        const currentUsually = pantryUsually.length > 0 ? pantryUsually : defaults.usually;
+        // Merge defaults from all selected cuisines as fallback
+        const mergedAlways = new Set<string>();
+        const mergedUsually = new Set<string>();
+        foodPalette.forEach(c => {
+          const d = PANTRY_DEFAULTS[c];
+          if (d) { d.always.forEach(i => mergedAlways.add(i)); d.usually.forEach(i => mergedUsually.add(i)); }
+        });
+        const currentAlways = pantryAlways.length > 0 ? pantryAlways : Array.from(mergedAlways);
+        const currentUsually = pantryUsually.length > 0 ? pantryUsually : Array.from(mergedUsually);
 
         const moveToUsually = (item: string) => {
           setPantryAlways(currentAlways.filter(i => i !== item));
@@ -522,7 +541,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                     draggable
                     onDragStart={() => handleDragStart(item, 'always')}
                     onDragEnd={handleDragEnd}
-                    className={`group inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-xs cursor-grab active:cursor-grabbing transition-all ${
+                    className={`group inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs cursor-grab active:cursor-grabbing transition-all ${
                       draggedItem === item
                         ? 'opacity-40 bg-brand-100 text-brand-700'
                         : 'bg-brand-100 text-brand-700'
@@ -531,15 +550,17 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                     <span>{item}</span>
                     <button
                       onClick={() => moveToUsually(item)}
-                      className="ml-0.5 sm:opacity-0 sm:group-hover:opacity-100 text-brand-500 hover:text-amber-600 transition-opacity"
+                      className="w-6 h-6 inline-flex items-center justify-center text-brand-500 hover:text-amber-600 hover:bg-brand-50 rounded-full transition-colors"
                       title="Move to Usually"
+                      aria-label={`Move ${item} to Usually`}
                     >
                       ↓
                     </button>
                     <button
                       onClick={() => setPantryAlways(currentAlways.filter(i => i !== item))}
-                      className="sm:opacity-0 sm:group-hover:opacity-100 text-brand-500 hover:text-red-600 transition-opacity"
+                      className="w-6 h-6 inline-flex items-center justify-center text-brand-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
                       title="Remove"
+                      aria-label={`Remove ${item}`}
                     >
                       &times;
                     </button>
@@ -569,7 +590,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                     draggable
                     onDragStart={() => handleDragStart(item, 'usually')}
                     onDragEnd={handleDragEnd}
-                    className={`group inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-xs cursor-grab active:cursor-grabbing transition-all ${
+                    className={`group inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs cursor-grab active:cursor-grabbing transition-all ${
                       draggedItem === item
                         ? 'opacity-40 bg-warm-100 text-warm-600'
                         : 'bg-warm-100 text-warm-600'
@@ -578,15 +599,17 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                     <span>{item}</span>
                     <button
                       onClick={() => moveToAlways(item)}
-                      className="ml-0.5 sm:opacity-0 sm:group-hover:opacity-100 text-warm-500 hover:text-brand-600 transition-opacity"
+                      className="w-6 h-6 inline-flex items-center justify-center text-warm-500 hover:text-brand-600 hover:bg-warm-50 rounded-full transition-colors"
                       title="Move to Always"
+                      aria-label={`Move ${item} to Always`}
                     >
                       ↑
                     </button>
                     <button
                       onClick={() => setPantryUsually(currentUsually.filter(i => i !== item))}
-                      className="sm:opacity-0 sm:group-hover:opacity-100 text-warm-500 hover:text-red-600 transition-opacity"
+                      className="w-6 h-6 inline-flex items-center justify-center text-warm-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
                       title="Remove"
+                      aria-label={`Remove ${item}`}
                     >
                       &times;
                     </button>
@@ -666,7 +689,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               </div>
             </div>
             <p className="text-xs text-stone-400 text-center">
-              You can adjust these anytime from settings.
+              Calculated using the Mifflin-St Jeor equation. You can adjust these anytime from settings.
             </p>
           </div>
         );
@@ -676,6 +699,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
   const canProceed = () => {
     switch (STEPS[currentStep]) {
       case 'welcome': return name.trim().length > 0;
+      case 'kitchen-setup': return foodPalette.length > 0;
       default: return true;
     }
   };
@@ -710,9 +734,15 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
         {STEPS[currentStep] === 'targets-review' ? (
           <button
             onClick={handleFinish}
-            className="w-full py-3.5 bg-brand-500 text-white font-semibold rounded-xl hover:bg-brand-600 transition-all active:scale-[0.98]"
+            disabled={isSaving}
+            className="w-full py-3.5 bg-brand-500 text-white font-semibold rounded-xl hover:bg-brand-600 transition-all active:scale-[0.98] disabled:opacity-50"
           >
-            Start Cooking
+            {isSaving ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="spinner spinner-sm spinner-white" />
+                Saving...
+              </span>
+            ) : 'Start Cooking'}
           </button>
         ) : (
           <button

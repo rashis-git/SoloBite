@@ -34,25 +34,51 @@ export default function RecipeCard({ recipe, profile, onTryAnother, isLoading }:
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl p-6 border border-stone-200 animate-gentle-pulse">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-stone-100 rounded-full" />
-          <div className="space-y-2 flex-1">
-            <div className="h-4 bg-stone-100 rounded w-3/4" />
-            <div className="h-3 bg-stone-100 rounded w-1/2" />
+      <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden animate-gentle-pulse">
+        {/* Header skeleton */}
+        <div className="p-5 pb-3">
+          <div className="h-5 bg-stone-100 rounded-lg w-3/4 mb-2" />
+          <div className="flex gap-3 mt-1">
+            <div className="h-3 bg-stone-100 rounded w-16" />
+            <div className="h-3 bg-stone-100 rounded w-20" />
+            <div className="h-3 bg-stone-100 rounded w-16" />
+          </div>
+          <div className="flex gap-1.5 mt-2">
+            <div className="h-5 bg-stone-100 rounded-full w-16" />
+            <div className="h-5 bg-stone-100 rounded-full w-20" />
           </div>
         </div>
-        <div className="flex justify-around mb-4">
+        {/* Nutrition rings skeleton */}
+        <div className="px-5 py-3 flex justify-around border-y border-stone-100 bg-stone-50/50">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="w-16 h-16 bg-stone-100 rounded-full" />
+            <div key={i} className="flex flex-col items-center gap-1">
+              <div className="w-[60px] h-[60px] bg-stone-100 rounded-full" />
+              <div className="h-3 bg-stone-100 rounded w-10" />
+            </div>
           ))}
         </div>
-        <div className="space-y-2">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="h-3 bg-stone-100 rounded" />
-          ))}
+        {/* Ingredients skeleton */}
+        <div className="p-5 pb-3">
+          <div className="h-4 bg-stone-100 rounded w-24 mb-3" />
+          <div className="space-y-2">
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={i} className="flex gap-2">
+                <div className="w-5 h-5 bg-stone-100 rounded" />
+                <div className="h-3 bg-stone-100 rounded" style={{ width: `${50 + i * 8}%` }} />
+              </div>
+            ))}
+          </div>
         </div>
-        <p className="text-center text-sm text-stone-400 mt-4">Cooking up something good...</p>
+        {/* Action skeleton */}
+        <div className="p-5 pt-2">
+          <div className="h-11 bg-stone-100 rounded-xl" />
+        </div>
+        <p className="text-center text-sm text-stone-400 pb-4">
+          <span className="flex items-center justify-center gap-2">
+            <span className="spinner spinner-sm" />
+            Cooking up something good...
+          </span>
+        </p>
       </div>
     );
   }
@@ -118,7 +144,7 @@ export default function RecipeCard({ recipe, profile, onTryAnother, isLoading }:
       <div className="px-5 pb-3">
         <button
           onClick={() => setShowSteps(!showSteps)}
-          className="w-full py-2.5 text-sm font-medium text-brand-600 bg-brand-50 rounded-xl hover:bg-brand-100 transition-all"
+          className="w-full py-3 text-sm font-medium text-brand-600 bg-brand-50 rounded-xl hover:bg-brand-100 transition-all min-h-[44px]"
         >
           {showSteps ? 'Hide Steps' : `Show Steps (${recipe.steps.length} steps)`}
         </button>
