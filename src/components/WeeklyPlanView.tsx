@@ -32,14 +32,14 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
   return (
     <div className="space-y-4 animate-slide-up">
       <div>
-        <h2 className="text-xl font-bold text-stone-900">Your Weekly Plan</h2>
-        <p className="text-sm text-stone-500">
+        <h2 className="text-xl font-bold text-warm-900">Your Weekly Plan</h2>
+        <p className="text-sm text-warm-500">
           {profile.mealsPerDay * 7} meals &middot; Est. Rs {plan.totalEstimatedCost}
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex bg-stone-100 rounded-xl p-1">
+      <div className="flex bg-warm-100 rounded-xl p-1">
         {[
           { id: 'meals' as const, label: 'Meals' },
           { id: 'grocery' as const, label: 'Grocery List' },
@@ -50,8 +50,8 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${
               activeTab === tab.id
-                ? 'bg-white text-stone-900 shadow-sm'
-                : 'text-stone-500 hover:text-stone-700'
+                ? 'bg-white text-warm-900 shadow-sm'
+                : 'text-warm-500 hover:text-warm-700'
             }`}
           >
             {tab.label}
@@ -61,13 +61,13 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
 
       {/* Meals tab */}
       {activeTab === 'meals' && (
-        <div className="space-y-3">
+        <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
           {plan.days.map(day => (
-            <div key={day.day} className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
-              <div className="px-4 py-3 bg-stone-50 border-b border-stone-100">
-                <h3 className="font-semibold text-stone-800">{day.day}</h3>
+            <div key={day.day} className="bg-white rounded-2xl border border-warm-200 overflow-hidden">
+              <div className="px-4 py-3 bg-warm-50 border-b border-warm-100">
+                <h3 className="font-semibold text-warm-800">{day.day}</h3>
               </div>
-              <div className="divide-y divide-stone-100">
+              <div className="divide-y divide-warm-100">
                 {day.meals.map((meal, mealIndex) => {
                   const key = `${day.day}-${mealIndex}`;
                   const isExpanded = expandedMeal === key;
@@ -77,23 +77,23 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
                     <div key={key}>
                       <button
                         onClick={() => toggleMeal(key)}
-                        className="w-full px-4 py-3 flex items-center justify-between hover:bg-stone-50 transition-all"
+                        className="w-full px-4 py-3 flex items-center justify-between hover:bg-warm-50 transition-all"
                       >
                         <div className="text-left">
-                          <span className="text-xs text-stone-400 uppercase">{meal.type}</span>
-                          <p className="text-sm font-medium text-stone-700">{recipe.name}</p>
+                          <span className="text-xs text-warm-400 uppercase">{meal.type}</span>
+                          <p className="text-sm font-medium text-warm-700">{recipe.name}</p>
                         </div>
                         <div className="text-right flex items-center gap-3">
-                          <div className="text-xs text-stone-400">
+                          <div className="text-xs text-warm-400">
                             {recipe.calories} cal &middot; {recipe.protein}g protein
                           </div>
-                          <span className="text-stone-300">{isExpanded ? '▲' : '▼'}</span>
+                          <span className="text-warm-300">{isExpanded ? '▲' : '▼'}</span>
                         </div>
                       </button>
 
                       {isExpanded && (
                         <div className="px-4 pb-4 space-y-3">
-                          <div className="flex gap-3 text-xs text-stone-500">
+                          <div className="flex gap-3 text-xs text-warm-500">
                             <span>{recipe.prepTime + recipe.cookTime} min</span>
                             <span className="capitalize">{recipe.difficulty}</span>
                           </div>
@@ -108,10 +108,10 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
 
                           {/* Ingredients */}
                           <div>
-                            <p className="text-xs font-medium text-stone-600 mb-1">Ingredients</p>
+                            <p className="text-xs font-medium text-warm-600 mb-1">Ingredients</p>
                             <ul className="space-y-1">
                               {recipe.ingredients.map((ing, i) => (
-                                <li key={i} className="text-xs text-stone-600">
+                                <li key={i} className="text-xs text-warm-600">
                                   {ing.quantity} {ing.name}
                                 </li>
                               ))}
@@ -120,10 +120,10 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
 
                           {/* Steps */}
                           <div>
-                            <p className="text-xs font-medium text-stone-600 mb-1">Steps</p>
+                            <p className="text-xs font-medium text-warm-600 mb-1">Steps</p>
                             <ol className="space-y-1.5">
                               {recipe.steps.map((step, i) => (
-                                <li key={i} className="flex gap-2 text-xs text-stone-600">
+                                <li key={i} className="flex gap-2 text-xs text-warm-600">
                                   <span className="text-brand-600 font-bold">{i + 1}.</span>
                                   <span>{step}</span>
                                 </li>
@@ -150,22 +150,23 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
           </div>
 
           {checkedItems.size > 0 && (
-            <p className="text-xs text-stone-400 text-center">
+            <p className="text-xs text-warm-400 text-center">
               {checkedItems.size} of {plan.groceryList.length} items checked off
             </p>
           )}
 
           {/* Group by category */}
+          <div className="md:grid md:grid-cols-2 md:gap-3 space-y-3 md:space-y-0">
           {['vegetables', 'fruits', 'protein', 'dairy', 'grains', 'pantry', 'other'].map(category => {
             const items = plan.groceryList.filter(item => item.category === category);
             if (items.length === 0) return null;
 
             return (
-              <div key={category} className="bg-white rounded-xl border border-stone-200 overflow-hidden">
-                <div className="px-4 py-2 bg-stone-50 border-b border-stone-100">
-                  <h4 className="text-sm font-semibold text-stone-700 capitalize">{category}</h4>
+              <div key={category} className="bg-white rounded-xl border border-warm-200 overflow-hidden">
+                <div className="px-4 py-2 bg-warm-50 border-b border-warm-100">
+                  <h4 className="text-sm font-semibold text-warm-700 capitalize">{category}</h4>
                 </div>
-                <ul className="divide-y divide-stone-50">
+                <ul className="divide-y divide-warm-50">
                   {items.map((item, i) => {
                     const itemKey = `${category}-${item.name}`;
                     const isChecked = checkedItems.has(itemKey);
@@ -175,8 +176,8 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
                           onClick={() => toggleGroceryItem(itemKey)}
                           className="w-6 h-6 rounded-lg border-2 flex-shrink-0 flex items-center justify-center transition-all"
                           style={{
-                            borderColor: isChecked ? '#22c55e' : '#d6d3d1',
-                            backgroundColor: isChecked ? '#22c55e' : 'transparent',
+                            borderColor: isChecked ? '#FEA322' : '#E4DCCA',
+                            backgroundColor: isChecked ? '#FEA322' : 'transparent',
                           }}
                           aria-label={`Mark ${item.name} as ${isChecked ? 'not bought' : 'bought'}`}
                         >
@@ -187,12 +188,12 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
                           )}
                         </button>
                         <div className={`flex-1 min-w-0 ${isChecked ? 'opacity-50' : ''}`}>
-                          <p className={`text-sm text-stone-700 ${isChecked ? 'line-through' : ''}`}>{item.name}</p>
-                          <p className="text-xs text-stone-400">{item.quantity}</p>
+                          <p className={`text-sm text-warm-700 ${isChecked ? 'line-through' : ''}`}>{item.name}</p>
+                          <p className="text-xs text-warm-400">{item.quantity}</p>
                         </div>
                         <div className={`text-right flex-shrink-0 ${isChecked ? 'opacity-50' : ''}`}>
-                          <p className="text-sm font-medium text-stone-700">Rs {item.estimatedCost}</p>
-                          <p className="text-xs text-stone-400">{item.usedInMeals.length} meals</p>
+                          <p className="text-sm font-medium text-warm-700">Rs {item.estimatedCost}</p>
+                          <p className="text-xs text-warm-400">{item.usedInMeals.length} meals</p>
                         </div>
                       </li>
                     );
@@ -201,19 +202,20 @@ export default function WeeklyPlanView({ plan, profile }: WeeklyPlanViewProps) {
               </div>
             );
           })}
+          </div>
         </div>
       )}
 
       {/* Ingredient threads tab */}
       {activeTab === 'threads' && (
-        <div className="space-y-2">
-          <p className="text-xs text-stone-400">See how each ingredient is used across the week</p>
+        <div className="space-y-2 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3 md:space-y-0">
+          <p className="text-xs text-warm-400">See how each ingredient is used across the week</p>
           {plan.ingredientThreads.map((thread, i) => (
-            <div key={i} className="bg-white rounded-xl border border-stone-200 p-3">
-              <p className="text-sm font-medium text-stone-700">{thread.ingredient}</p>
+            <div key={i} className="bg-white rounded-xl border border-warm-200 p-3">
+              <p className="text-sm font-medium text-warm-700">{thread.ingredient}</p>
               <ul className="mt-1 space-y-0.5">
                 {thread.usedIn.map((use, j) => (
-                  <li key={j} className="text-xs text-stone-500 flex items-center gap-1.5">
+                  <li key={j} className="text-xs text-warm-500 flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 bg-brand-400 rounded-full flex-shrink-0" />
                     {use}
                   </li>

@@ -16,9 +16,9 @@ export default function NutritionRing({ label, value, target, unit, color, size 
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   const colorMap: Record<string, { ring: string; bg: string; text: string }> = {
-    green: { ring: '#22c55e', bg: '#f0fdf4', text: '#15803d' },
-    blue: { ring: '#3b82f6', bg: '#eff6ff', text: '#1d4ed8' },
-    amber: { ring: '#f59e0b', bg: '#fffbeb', text: '#b45309' },
+    green: { ring: '#FEA322', bg: '#FFF8EB', text: '#BB6A0A' },
+    blue: { ring: '#007771', bg: '#F0FDFB', text: '#234C4C' },
+    amber: { ring: '#FCC44A', bg: '#FFF8EB', text: '#98520F' },
     rose: { ring: '#f43f5e', bg: '#fff1f2', text: '#be123c' },
   };
 
@@ -62,11 +62,11 @@ export default function NutritionRing({ label, value, target, unit, color, size 
           <span className="text-sm font-bold" style={{ color: colors.text }}>
             {value}
           </span>
-          <span className="text-[10px] text-stone-400">{unit}</span>
+          <span className="text-[10px] text-warm-400">{unit}</span>
         </div>
       </div>
-      <span className="text-xs text-stone-500 mt-1">{label}</span>
-      <span className="text-[10px] text-stone-400">/ {target}{unit === 'cal' ? '' : 'g'}</span>
+      <span className="text-xs text-warm-500 mt-1">{label}</span>
+      <span className="text-[10px] text-warm-400">/ {target}{unit === 'cal' ? '' : 'g'}</span>
     </div>
   );
 }

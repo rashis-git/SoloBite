@@ -2,10 +2,10 @@
   "name": "SoloBite",
   "short_name": "SoloBite",
   "description": "AI-powered meal companion for solo diners",
-  "start_url": "/",
+  "start_url": "/app",
   "display": "standalone",
-  "background_color": "#fafaf9",
-  "theme_color": "#22c55e",
+  "background_color": "#F8F4E9",
+  "theme_color": "#234C4C",
   "orientation": "portrait",
   "icons": [
     {

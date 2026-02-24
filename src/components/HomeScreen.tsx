@@ -181,12 +181,12 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-stone-900">SoloBite</h1>
-            <p className="text-sm text-stone-500">{getGreeting()}, {profile.name}!</p>
+            <h1 className="text-xl font-bold text-warm-900">SoloBite</h1>
+            <p className="text-sm text-warm-500">{getGreeting()}, {profile.name}!</p>
           </div>
           <button
             onClick={onEditProfile}
-            className="w-11 h-11 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 hover:bg-stone-200 text-base transition-colors"
+            className="w-11 h-11 rounded-full bg-warm-100 flex items-center justify-center text-warm-500 hover:bg-warm-200 text-base transition-colors"
             title="Settings"
             aria-label="Settings"
           >
@@ -194,155 +194,164 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
           </button>
         </div>
 
-        {/* Smart input */}
-        <div className="space-y-3">
-          <div className="relative">
-            <textarea
-              value={inputText}
-              onChange={e => setInputText(e.target.value)}
-              placeholder='eggs, tomato, onion... or just "something quick"'
-              className="w-full px-4 py-3 rounded-2xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none text-sm resize-none min-h-[80px] bg-white"
-              onKeyDown={e => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit();
-                }
-              }}
-            />
-          </div>
+        {/* Desktop: 2-column layout — input area | sidebar */}
+        <div className="lg:grid lg:grid-cols-5 lg:gap-8">
+          {/* Main input column */}
+          <div className="lg:col-span-3 space-y-5">
+            {/* Smart input */}
+            <div className="space-y-3">
+              <div className="relative">
+                <textarea
+                  value={inputText}
+                  onChange={e => setInputText(e.target.value)}
+                  placeholder='eggs, tomato, onion... or just "something quick"'
+                  className="w-full px-4 py-3 rounded-2xl border border-warm-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none text-sm resize-none min-h-[80px] bg-white"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSubmit();
+                    }
+                  }}
+                />
+              </div>
 
-          <div className="flex gap-2">
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/*"
-              onChange={handlePhotoUpload}
-              className="hidden"
-            />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isGenerating}
-              className="flex-1 flex items-center justify-center gap-2 py-3 min-h-[44px] bg-white border border-stone-200 rounded-xl text-sm text-stone-600 hover:bg-stone-50 transition-all disabled:opacity-50"
-            >
-              <span>📷</span> Upload Photo
-            </button>
-            <button
-              onClick={handleVoiceInput}
-              disabled={isGenerating || isListening}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 min-h-[44px] border rounded-xl text-sm transition-all disabled:opacity-50 ${
-                isListening
-                  ? 'bg-red-50 border-red-300 text-red-600'
-                  : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50'
-              }`}
-            >
-              <span>{isListening ? '🔴' : '🎤'}</span> {isListening ? 'Listening...' : 'Speak'}
-            </button>
-          </div>
-
-          {inputText.trim() && (
-            <button
-              onClick={handleSubmit}
-              disabled={isGenerating}
-              className="w-full py-3.5 bg-brand-500 text-white font-semibold rounded-xl hover:bg-brand-600 transition-all active:scale-[0.98] disabled:opacity-50"
-            >
-              {isGenerating ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="spinner spinner-sm spinner-white" />
-                  Generating...
-                </span>
-              ) : 'Generate Recipe'}
-            </button>
-          )}
-        </div>
-
-        {/* Serving count */}
-        {inputText.trim() && (
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-stone-500">Cooking for:</span>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4].map(n => (
+              <div className="flex gap-2">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
                 <button
-                  key={n}
-                  onClick={() => setServingCount(n)}
-                  className={`w-11 h-11 rounded-full text-sm font-medium transition-all ${
-                    servingCount === n
-                      ? 'bg-brand-500 text-white'
-                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isGenerating}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 min-h-[44px] bg-white border border-warm-200 rounded-xl text-sm text-warm-600 hover:bg-warm-50 transition-all disabled:opacity-50"
+                >
+                  <span>📷</span> Upload Photo
+                </button>
+                <button
+                  onClick={handleVoiceInput}
+                  disabled={isGenerating || isListening}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 min-h-[44px] border rounded-xl text-sm transition-all disabled:opacity-50 ${
+                    isListening
+                      ? 'bg-red-50 border-red-300 text-red-600'
+                      : 'bg-white border-warm-200 text-warm-600 hover:bg-warm-50'
                   }`}
                 >
-                  {n}
+                  <span>{isListening ? '🔴' : '🎤'}</span> {isListening ? 'Listening...' : 'Speak'}
                 </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Quick picks */}
-        <div>
-          <p className="text-xs text-stone-400 mb-2">Quick picks</p>
-          <div className="flex flex-wrap gap-2">
-            {QUICK_PICKS.map(pick => (
-              <button
-                key={pick.id}
-                onClick={() => handleQuickPick(pick.prompt)}
-                disabled={isGenerating}
-                className="px-4 py-2.5 min-h-[44px] bg-white border border-stone-200 rounded-full text-sm text-stone-600 hover:bg-brand-50 hover:border-brand-200 hover:text-brand-700 transition-all disabled:opacity-50"
-              >
-                {pick.icon} {pick.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Leftovers section */}
-        <div className="bg-warm-50 rounded-2xl p-4 border border-warm-100">
-          <button
-            onClick={() => setShowLeftovers(!showLeftovers)}
-            className="flex items-center justify-between w-full"
-          >
-            <div>
-              <p className="text-sm font-medium text-warm-600">🍲 Got leftovers?</p>
-              <p className="text-xs text-stone-400">Turn yesterday&apos;s food into today&apos;s meal</p>
-            </div>
-            <span className="text-stone-400">{showLeftovers ? '▲' : '▼'}</span>
-          </button>
-
-          {showLeftovers && (
-            <div className="mt-3 space-y-2">
-              <div className="flex flex-wrap gap-1.5">
-                {COMMON_LEFTOVERS.map(item => (
-                  <button
-                    key={item}
-                    onClick={() => toggleLeftover(item)}
-                    className={`px-3 py-2 rounded-full text-xs font-medium transition-all ${
-                      leftovers.includes(item)
-                        ? 'bg-warm-500 text-white'
-                        : 'bg-white text-stone-600 border border-stone-200'
-                    }`}
-                  >
-                    {item}
-                  </button>
-                ))}
               </div>
-              {leftovers.length > 0 && (
+
+              {inputText.trim() && (
                 <button
-                  onClick={() => generateRecipe(`repurpose these leftovers: ${leftovers.join(', ')}`, [], leftovers)}
-                  className="w-full py-3 bg-warm-500 text-white text-sm font-medium rounded-xl hover:bg-warm-600 transition-all min-h-[44px]"
+                  onClick={handleSubmit}
+                  disabled={isGenerating}
+                  className="w-full py-3.5 bg-brand-500 text-white font-semibold rounded-xl hover:bg-brand-600 transition-all active:scale-[0.98] disabled:opacity-50"
                 >
-                  Find recipes for leftovers
+                  {isGenerating ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="spinner spinner-sm spinner-white" />
+                      Generating...
+                    </span>
+                  ) : 'Generate Recipe'}
                 </button>
               )}
             </div>
-          )}
-        </div>
 
-        {/* Plan My Week */}
-        <button
-          onClick={() => setViewMode('weekly-input')}
-          className="w-full py-4 bg-white border-2 border-dashed border-brand-300 rounded-2xl text-brand-600 font-medium hover:bg-brand-50 transition-all flex items-center justify-center gap-2"
-        >
-          📅 Plan My Week
-        </button>
+            {/* Serving count */}
+            {inputText.trim() && (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-warm-500">Cooking for:</span>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4].map(n => (
+                    <button
+                      key={n}
+                      onClick={() => setServingCount(n)}
+                      className={`w-11 h-11 rounded-full text-sm font-medium transition-all ${
+                        servingCount === n
+                          ? 'bg-brand-500 text-white'
+                          : 'bg-warm-100 text-warm-600 hover:bg-warm-200'
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Leftovers section */}
+            <div className="bg-teal-50 rounded-2xl p-4 border border-teal-100">
+              <button
+                onClick={() => setShowLeftovers(!showLeftovers)}
+                className="flex items-center justify-between w-full"
+              >
+                <div>
+                  <p className="text-sm font-medium text-teal-600">🍲 Got leftovers?</p>
+                  <p className="text-xs text-warm-400">Turn yesterday&apos;s food into today&apos;s meal</p>
+                </div>
+                <span className="text-warm-400">{showLeftovers ? '▲' : '▼'}</span>
+              </button>
+
+              {showLeftovers && (
+                <div className="mt-3 space-y-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    {COMMON_LEFTOVERS.map(item => (
+                      <button
+                        key={item}
+                        onClick={() => toggleLeftover(item)}
+                        className={`px-3 py-2 rounded-full text-xs font-medium transition-all ${
+                          leftovers.includes(item)
+                            ? 'bg-teal-500 text-white'
+                            : 'bg-white text-warm-600 border border-warm-200'
+                        }`}
+                      >
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                  {leftovers.length > 0 && (
+                    <button
+                      onClick={() => generateRecipe(`repurpose these leftovers: ${leftovers.join(', ')}`, [], leftovers)}
+                      className="w-full py-3 bg-teal-500 text-white text-sm font-medium rounded-xl hover:bg-teal-600 transition-all min-h-[44px]"
+                    >
+                      Find recipes for leftovers
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Plan My Week */}
+            <button
+              onClick={() => setViewMode('weekly-input')}
+              className="w-full py-4 bg-white border-2 border-dashed border-brand-300 rounded-2xl text-brand-600 font-medium hover:bg-brand-50 transition-all flex items-center justify-center gap-2"
+            >
+              📅 Plan My Week
+            </button>
+          </div>
+
+          {/* Sidebar — quick picks (desktop: right column, mobile: below) */}
+          <div className="lg:col-span-2 space-y-5 mt-5 lg:mt-0">
+            {/* Quick picks */}
+            <div>
+              <p className="text-xs text-warm-400 mb-2">Quick picks</p>
+              <div className="flex flex-wrap gap-2">
+                {QUICK_PICKS.map(pick => (
+                  <button
+                    key={pick.id}
+                    onClick={() => handleQuickPick(pick.prompt)}
+                    disabled={isGenerating}
+                    className="px-4 py-2.5 min-h-[44px] bg-white border border-warm-200 rounded-full text-sm text-warm-600 hover:bg-brand-50 hover:border-brand-200 hover:text-brand-700 transition-all disabled:opacity-50"
+                  >
+                    {pick.icon} {pick.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
         {error && (
           <div className="bg-red-50 text-red-600 text-sm p-3 rounded-xl">
@@ -400,7 +409,7 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
   // Weekly plan input
   if (viewMode === 'weekly-input') {
     return (
-      <div className="px-5 py-6 space-y-5">
+      <div className="px-5 py-6 space-y-5 max-w-2xl mx-auto">
         <button
           onClick={() => setViewMode('home')}
           className="inline-flex items-center gap-1 text-sm text-brand-600 font-medium py-2 px-1 -ml-1 min-h-[44px]"
@@ -408,42 +417,42 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
           &larr; Back
         </button>
         <div>
-          <h2 className="text-xl font-bold text-stone-900">Plan My Week</h2>
-          <p className="text-sm text-stone-500">We&apos;ll create a 7-day plan with a smart grocery list</p>
+          <h2 className="text-xl font-bold text-warm-900">Plan My Week</h2>
+          <p className="text-sm text-warm-500">We&apos;ll create a 7-day plan with a smart grocery list</p>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-stone-600 mb-1">
-              Any preferences for this week? <span className="text-stone-400">(optional)</span>
+            <label className="block text-sm font-medium text-warm-600 mb-1">
+              Any preferences for this week? <span className="text-warm-400">(optional)</span>
             </label>
             <textarea
               value={weeklyPreferences}
               onChange={e => setWeeklyPreferences(e.target.value)}
               placeholder='e.g., "more protein-heavy", "include some South Indian breakfasts", "I want to try new things"'
-              className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none text-sm resize-none min-h-[60px]"
+              className="w-full px-4 py-3 rounded-xl border border-warm-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none text-sm resize-none min-h-[60px]"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-stone-600 mb-1">
-              Weekly grocery budget <span className="text-stone-400">(optional, in Rs)</span>
+            <label className="block text-sm font-medium text-warm-600 mb-1">
+              Weekly grocery budget <span className="text-warm-400">(optional, in Rs)</span>
             </label>
             <input
               type="number"
               value={weeklyBudget}
               onChange={e => setWeeklyBudget(e.target.value)}
               placeholder="e.g., 1500"
-              className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none text-sm"
+              className="w-full px-4 py-3 rounded-xl border border-warm-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none text-sm"
             />
           </div>
 
-          <div className="bg-stone-50 rounded-xl p-3">
-            <p className="text-xs text-stone-500">
+          <div className="bg-warm-50 rounded-xl p-3">
+            <p className="text-xs text-warm-500">
               Your plan: <strong>{profile.mealsPerDay} meals/day</strong> &middot; 7 days &middot;{' '}
               <strong>{profile.mealsPerDay * 7} total meals</strong>
             </p>
-            <p className="text-xs text-stone-400 mt-1">
+            <p className="text-xs text-warm-400 mt-1">
               Ingredients will be cross-optimized to minimize waste.
             </p>
           </div>
@@ -486,8 +495,8 @@ export default function HomeScreen({ profile, onEditProfile }: HomeScreenProps) 
           <div className="text-center py-12 space-y-4">
             <div className="text-4xl animate-gentle-pulse">📅</div>
             <div className="spinner mx-auto" />
-            <p className="text-stone-600 font-medium">Planning your week...</p>
-            <p className="text-sm text-stone-400">Cross-optimizing ingredients across {profile.mealsPerDay * 7} meals</p>
+            <p className="text-warm-600 font-medium">Planning your week...</p>
+            <p className="text-sm text-warm-400">Cross-optimizing ingredients across {profile.mealsPerDay * 7} meals</p>
           </div>
         ) : weeklyPlan ? (
           <WeeklyPlanView plan={weeklyPlan} profile={profile} />

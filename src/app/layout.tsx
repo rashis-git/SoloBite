@@ -1,5 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { Epilogue, DM_Sans } from "next/font/google";
 import "./globals.css";
+
+const epilogue = Epilogue({
+  subsets: ["latin"],
+  variable: "--font-epilogue",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: "SoloBite — Your Fridge, One Plate, Fully Fueled",
@@ -16,7 +31,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#22c55e",
+  themeColor: "#234C4C",
 };
 
 export default function RootLayout({
@@ -25,14 +40,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${epilogue.variable} ${dmSans.variable}`}>
       <head>
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body className="antialiased min-h-screen">
-        <main className="max-w-md mx-auto min-h-screen overflow-x-hidden">
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );

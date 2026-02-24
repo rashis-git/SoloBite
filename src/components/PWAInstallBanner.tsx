@@ -63,32 +63,32 @@ export default function PWAInstallBanner() {
   if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 mx-auto max-w-md">
-      <div className="bg-white rounded-2xl border border-stone-200 shadow-lg p-4 animate-slide-up">
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 mx-auto max-w-4xl">
+      <div className="bg-white rounded-2xl border border-warm-200 shadow-lg p-4 animate-slide-up">
         <div className="flex items-start gap-3">
           <div className="text-2xl flex-shrink-0">🍳</div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-stone-800">Add SoloBite to Home Screen</p>
+            <p className="text-sm font-semibold text-warm-800">Add SoloBite to Home Screen</p>
             {isIOS ? (
-              <div className="text-xs text-stone-500 mt-2 space-y-1.5">
+              <div className="text-xs text-warm-500 mt-2 space-y-1.5">
                 <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 bg-stone-100 rounded flex items-center justify-center text-[10px] font-bold text-stone-600 flex-shrink-0">1</span>
+                  <span className="w-5 h-5 bg-warm-100 rounded flex items-center justify-center text-[10px] font-bold text-warm-600 flex-shrink-0">1</span>
                   <span>Tap the <strong>Share</strong> button at the bottom of Safari</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 bg-stone-100 rounded flex items-center justify-center text-[10px] font-bold text-stone-600 flex-shrink-0">2</span>
+                  <span className="w-5 h-5 bg-warm-100 rounded flex items-center justify-center text-[10px] font-bold text-warm-600 flex-shrink-0">2</span>
                   <span>Scroll down and tap <strong>Add to Home Screen</strong></span>
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-stone-500 mt-1">
+              <p className="text-xs text-warm-500 mt-1">
                 Install the app for quick access and offline recipe viewing
               </p>
             )}
           </div>
           <button
             onClick={handleDismiss}
-            className="w-8 h-8 flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-full text-lg leading-none flex-shrink-0 transition-colors"
+            className="w-8 h-8 flex items-center justify-center text-warm-400 hover:text-warm-600 hover:bg-warm-100 rounded-full text-lg leading-none flex-shrink-0 transition-colors"
             aria-label="Dismiss install banner"
           >
             &times;

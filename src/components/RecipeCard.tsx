@@ -34,46 +34,46 @@ export default function RecipeCard({ recipe, profile, onTryAnother, isLoading }:
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden animate-gentle-pulse">
+      <div className="bg-white rounded-2xl border border-warm-200 overflow-hidden animate-gentle-pulse">
         {/* Header skeleton */}
         <div className="p-5 pb-3">
-          <div className="h-5 bg-stone-100 rounded-lg w-3/4 mb-2" />
+          <div className="h-5 bg-warm-100 rounded-lg w-3/4 mb-2" />
           <div className="flex gap-3 mt-1">
-            <div className="h-3 bg-stone-100 rounded w-16" />
-            <div className="h-3 bg-stone-100 rounded w-20" />
-            <div className="h-3 bg-stone-100 rounded w-16" />
+            <div className="h-3 bg-warm-100 rounded w-16" />
+            <div className="h-3 bg-warm-100 rounded w-20" />
+            <div className="h-3 bg-warm-100 rounded w-16" />
           </div>
           <div className="flex gap-1.5 mt-2">
-            <div className="h-5 bg-stone-100 rounded-full w-16" />
-            <div className="h-5 bg-stone-100 rounded-full w-20" />
+            <div className="h-5 bg-warm-100 rounded-full w-16" />
+            <div className="h-5 bg-warm-100 rounded-full w-20" />
           </div>
         </div>
         {/* Nutrition rings skeleton */}
-        <div className="px-5 py-3 flex justify-around border-y border-stone-100 bg-stone-50/50">
+        <div className="px-5 py-3 flex justify-around border-y border-warm-100 bg-warm-50/50">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="flex flex-col items-center gap-1">
-              <div className="w-[60px] h-[60px] bg-stone-100 rounded-full" />
-              <div className="h-3 bg-stone-100 rounded w-10" />
+              <div className="w-[60px] h-[60px] bg-warm-100 rounded-full" />
+              <div className="h-3 bg-warm-100 rounded w-10" />
             </div>
           ))}
         </div>
         {/* Ingredients skeleton */}
         <div className="p-5 pb-3">
-          <div className="h-4 bg-stone-100 rounded w-24 mb-3" />
+          <div className="h-4 bg-warm-100 rounded w-24 mb-3" />
           <div className="space-y-2">
             {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="flex gap-2">
-                <div className="w-5 h-5 bg-stone-100 rounded" />
-                <div className="h-3 bg-stone-100 rounded" style={{ width: `${50 + i * 8}%` }} />
+                <div className="w-5 h-5 bg-warm-100 rounded" />
+                <div className="h-3 bg-warm-100 rounded" style={{ width: `${50 + i * 8}%` }} />
               </div>
             ))}
           </div>
         </div>
         {/* Action skeleton */}
         <div className="p-5 pt-2">
-          <div className="h-11 bg-stone-100 rounded-xl" />
+          <div className="h-11 bg-warm-100 rounded-xl" />
         </div>
-        <p className="text-center text-sm text-stone-400 pb-4">
+        <p className="text-center text-sm text-warm-400 pb-4">
           <span className="flex items-center justify-center gap-2">
             <span className="spinner spinner-sm" />
             Cooking up something good...
@@ -87,11 +87,11 @@ export default function RecipeCard({ recipe, profile, onTryAnother, isLoading }:
   const totalBuyCost = itemsToBuy.reduce((sum, i) => sum + (i.estimatedCost || 0), 0);
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden animate-slide-up">
+    <div className="bg-white rounded-2xl border border-warm-200 overflow-hidden animate-slide-up">
       {/* Header */}
       <div className="p-5 pb-3">
-        <h3 className="text-lg font-bold text-stone-900">{recipe.name}</h3>
-        <div className="flex gap-3 mt-1 text-sm text-stone-500">
+        <h3 className="text-lg font-bold text-warm-900">{recipe.name}</h3>
+        <div className="flex gap-3 mt-1 text-sm text-warm-500">
           <span>{recipe.prepTime + recipe.cookTime} min</span>
           <span>&middot;</span>
           <span className="capitalize">{recipe.difficulty}</span>
@@ -109,118 +109,138 @@ export default function RecipeCard({ recipe, profile, onTryAnother, isLoading }:
         )}
       </div>
 
-      {/* Nutrition rings */}
-      <div className="px-5 py-3 flex justify-around border-y border-stone-100 bg-stone-50/50">
-        <NutritionRing label="Calories" value={recipe.calories} target={profile.perMealCalories} unit="cal" color="green" />
-        <NutritionRing label="Protein" value={recipe.protein} target={profile.perMealProtein} unit="g" color="blue" />
-        <NutritionRing label="Carbs" value={recipe.carbs} target={profile.perMealCarbs} unit="g" color="amber" />
-        <NutritionRing label="Fat" value={recipe.fat} target={profile.perMealFat} unit="g" color="rose" />
-      </div>
-
-      {/* Ingredients */}
-      <div className="p-5 pb-3">
-        <h4 className="text-sm font-semibold text-stone-700 mb-2">Ingredients</h4>
-        <ul className="space-y-1.5">
-          {recipe.ingredients.map((ing, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm">
-              <span className="mt-0.5">{ing.available ? '✅' : '🛒'}</span>
-              <span className={ing.available ? 'text-stone-700' : 'text-stone-500'}>
-                {ing.quantity} {ing.name}
-                {!ing.available && ing.estimatedCost && (
-                  <span className="text-stone-400 ml-1">(~Rs {ing.estimatedCost})</span>
-                )}
-              </span>
-            </li>
-          ))}
-        </ul>
-        {itemsToBuy.length > 0 && (
-          <p className="text-xs text-stone-400 mt-2">
-            Items to buy: {itemsToBuy.length} &middot; Est. cost: Rs {totalBuyCost}
-          </p>
-        )}
-      </div>
-
-      {/* Steps toggle */}
-      <div className="px-5 pb-3">
-        <button
-          onClick={() => setShowSteps(!showSteps)}
-          className="w-full py-3 text-sm font-medium text-brand-600 bg-brand-50 rounded-xl hover:bg-brand-100 transition-all min-h-[44px]"
-        >
-          {showSteps ? 'Hide Steps' : `Show Steps (${recipe.steps.length} steps)`}
-        </button>
-        {showSteps && (
-          <ol className="mt-3 space-y-3">
-            {recipe.steps.map((step, i) => (
-              <li key={i} className="flex gap-3 text-sm">
-                <span className="flex-shrink-0 w-6 h-6 bg-brand-100 text-brand-700 rounded-full flex items-center justify-center text-xs font-bold">
-                  {i + 1}
-                </span>
-                <span className="text-stone-700 leading-relaxed">{step}</span>
-              </li>
-            ))}
-          </ol>
-        )}
-      </div>
-
-      {/* Delta upgrades */}
-      {recipe.deltaUpgrades && recipe.deltaUpgrades.length > 0 && (
-        <div className="px-5 pb-3">
-          <div className="bg-warm-50 rounded-xl p-3 border border-warm-100">
-            <p className="text-xs font-semibold text-warm-600 mb-2">Want something different?</p>
-            {recipe.deltaUpgrades.map((upgrade, i) => (
-              <div key={i} className="text-sm text-stone-700">
-                <p>
-                  Add <strong>{upgrade.itemsNeeded.join(' + ')}</strong>
-                  <span className="text-stone-400"> (~Rs {upgrade.estimatedCost})</span>
-                </p>
-                <p className="text-xs text-stone-500">
-                  &rarr; {upgrade.recipeName} &middot; {upgrade.protein}g protein &middot; {upgrade.calories} cal
-                </p>
-              </div>
-            ))}
+      {/* Desktop: 2-column — main content | nutrition sidebar */}
+      <div className="lg:grid lg:grid-cols-3">
+        {/* Main content column */}
+        <div className="lg:col-span-2">
+          {/* Nutrition rings — mobile only (inline), desktop in sidebar */}
+          <div className="lg:hidden px-5 py-3 flex justify-around border-y border-warm-100 bg-warm-50/50">
+            <NutritionRing label="Calories" value={recipe.calories} target={profile.perMealCalories} unit="cal" color="green" />
+            <NutritionRing label="Protein" value={recipe.protein} target={profile.perMealProtein} unit="g" color="blue" />
+            <NutritionRing label="Carbs" value={recipe.carbs} target={profile.perMealCarbs} unit="g" color="amber" />
+            <NutritionRing label="Fat" value={recipe.fat} target={profile.perMealFat} unit="g" color="rose" />
           </div>
-        </div>
-      )}
 
-      {/* YouTube videos */}
-      {!loadingVideos && videos.length > 0 && (
-        <div className="px-5 pb-3">
-          <h4 className="text-sm font-semibold text-stone-700 mb-2">Watch how to make this</h4>
-          <div className="space-y-2">
-            {videos.slice(0, 2).map((video, i) => (
-              <a
-                key={i}
-                href={video.videoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 p-2 rounded-xl bg-stone-50 hover:bg-stone-100 transition-all"
-              >
-                {video.thumbnailUrl ? (
-                  <img
-                    src={video.thumbnailUrl}
-                    alt={video.title}
-                    className="w-20 h-14 rounded-lg object-cover"
-                  />
-                ) : (
-                  <div className="w-20 h-14 bg-stone-200 rounded-lg flex items-center justify-center text-2xl">
-                    ▶
+          {/* Ingredients */}
+          <div className="p-5 pb-3">
+            <h4 className="text-sm font-semibold text-warm-700 mb-2">Ingredients</h4>
+            <ul className="space-y-1.5 md:grid md:grid-cols-2 md:gap-x-4 md:space-y-0 md:gap-y-1.5">
+              {recipe.ingredients.map((ing, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm">
+                  <span className="mt-0.5">{ing.available ? '✅' : '🛒'}</span>
+                  <span className={ing.available ? 'text-warm-700' : 'text-warm-500'}>
+                    {ing.quantity} {ing.name}
+                    {!ing.available && ing.estimatedCost && (
+                      <span className="text-warm-400 ml-1">(~Rs {ing.estimatedCost})</span>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {itemsToBuy.length > 0 && (
+              <p className="text-xs text-warm-400 mt-2">
+                Items to buy: {itemsToBuy.length} &middot; Est. cost: Rs {totalBuyCost}
+              </p>
+            )}
+          </div>
+
+          {/* Steps toggle */}
+          <div className="px-5 pb-3">
+            <button
+              onClick={() => setShowSteps(!showSteps)}
+              className="w-full py-3 text-sm font-medium text-brand-600 bg-brand-50 rounded-xl hover:bg-brand-100 transition-all min-h-[44px]"
+            >
+              {showSteps ? 'Hide Steps' : `Show Steps (${recipe.steps.length} steps)`}
+            </button>
+            {showSteps && (
+              <ol className="mt-3 space-y-3">
+                {recipe.steps.map((step, i) => (
+                  <li key={i} className="flex gap-3 text-sm">
+                    <span className="flex-shrink-0 w-6 h-6 bg-brand-100 text-brand-700 rounded-full flex items-center justify-center text-xs font-bold">
+                      {i + 1}
+                    </span>
+                    <span className="text-warm-700 leading-relaxed">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+
+          {/* Delta upgrades */}
+          {recipe.deltaUpgrades && recipe.deltaUpgrades.length > 0 && (
+            <div className="px-5 pb-3">
+              <div className="bg-teal-50 rounded-xl p-3 border border-teal-100">
+                <p className="text-xs font-semibold text-teal-600 mb-2">Want something different?</p>
+                {recipe.deltaUpgrades.map((upgrade, i) => (
+                  <div key={i} className="text-sm text-warm-700">
+                    <p>
+                      Add <strong>{upgrade.itemsNeeded.join(' + ')}</strong>
+                      <span className="text-warm-400"> (~Rs {upgrade.estimatedCost})</span>
+                    </p>
+                    <p className="text-xs text-warm-500">
+                      &rarr; {upgrade.recipeName} &middot; {upgrade.protein}g protein &middot; {upgrade.calories} cal
+                    </p>
                   </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-stone-700 line-clamp-2">{video.title}</p>
-                  <p className="text-xs text-stone-400">{video.channelName}</p>
-                </div>
-              </a>
-            ))}
-          </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Desktop sidebar — nutrition + videos + extras */}
+        <div className="lg:col-span-1 lg:border-l lg:border-warm-100">
+          {/* Nutrition rings — desktop sidebar */}
+          <div className="hidden lg:block px-5 py-4 bg-warm-50/50">
+            <h4 className="text-sm font-semibold text-warm-700 mb-3">Nutrition</h4>
+            <div className="grid grid-cols-2 gap-3">
+              <NutritionRing label="Calories" value={recipe.calories} target={profile.perMealCalories} unit="cal" color="green" />
+              <NutritionRing label="Protein" value={recipe.protein} target={profile.perMealProtein} unit="g" color="blue" />
+              <NutritionRing label="Carbs" value={recipe.carbs} target={profile.perMealCarbs} unit="g" color="amber" />
+              <NutritionRing label="Fat" value={recipe.fat} target={profile.perMealFat} unit="g" color="rose" />
+            </div>
+          </div>
+
+          {/* YouTube videos */}
+          {!loadingVideos && videos.length > 0 && (
+            <div className="px-5 py-3 lg:border-t lg:border-warm-100">
+              <h4 className="text-sm font-semibold text-warm-700 mb-2">Watch how to make this</h4>
+              <div className="space-y-2">
+                {videos.slice(0, 2).map((video, i) => (
+                  <a
+                    key={i}
+                    href={video.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-2 rounded-xl bg-warm-50 hover:bg-warm-100 transition-all"
+                  >
+                    {video.thumbnailUrl ? (
+                      <img
+                        src={video.thumbnailUrl}
+                        alt={video.title}
+                        className="w-20 h-14 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="w-20 h-14 bg-warm-200 rounded-lg flex items-center justify-center text-2xl">
+                        ▶
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-warm-700 line-clamp-2">{video.title}</p>
+                      <p className="text-xs text-warm-400">{video.channelName}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Actions */}
       <div className="p-5 pt-2 flex gap-2">
         <button
           onClick={onTryAnother}
-          className="flex-1 py-3 bg-stone-100 text-stone-700 font-medium rounded-xl hover:bg-stone-200 transition-all text-sm"
+          className="flex-1 py-3 bg-warm-100 text-warm-700 font-medium rounded-xl hover:bg-warm-200 transition-all text-sm"
         >
           Try Another
         </button>
