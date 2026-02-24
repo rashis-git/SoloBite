@@ -708,7 +708,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
   };
 
   return (
-    <div className="min-h-screen flex flex-col px-5 py-6 max-w-2xl mx-auto w-full">
+    <div className="flex-1 flex flex-col px-5 py-6 max-w-2xl mx-auto w-full">
       {/* Progress bar */}
       <div className="mb-2">
         <div className="flex justify-between items-center mb-1">

@@ -16,12 +16,16 @@ export default function AppHome() {
 
   useEffect(() => {
     const init = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const isDemo = localStorage.getItem('solobite_demo') === 'true';
 
-      if (!user) {
-        router.push('/login');
-        return;
+      if (!isDemo) {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+          router.push('/login');
+          return;
+        }
       }
 
       // Try localStorage cache first for instant load
@@ -31,14 +35,20 @@ export default function AppHome() {
         setIsLoading(false);
       }
 
-      // Then fetch from Supabase (source of truth)
-      const dbProfile = await fetchProfile();
-      if (dbProfile?.onboardingComplete) {
-        setProfile(dbProfile);
-        setShowOnboarding(false);
-      } else {
+      if (!isDemo) {
+        // Fetch from Supabase (source of truth) for authenticated users
+        const dbProfile = await fetchProfile();
+        if (dbProfile?.onboardingComplete) {
+          setProfile(dbProfile);
+          setShowOnboarding(false);
+        } else if (!cached?.onboardingComplete) {
+          setShowOnboarding(true);
+        }
+      } else if (!cached?.onboardingComplete) {
+        // Demo mode — go straight to onboarding if no cached profile
         setShowOnboarding(true);
       }
+
       setIsLoading(false);
     };
     init();
@@ -55,7 +65,7 @@ export default function AppHome() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="w-16 h-16 mx-auto bg-brand-100 rounded-2xl flex items-center justify-center text-3xl">
             🍳

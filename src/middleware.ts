@@ -25,12 +25,19 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  // Allow demo mode users through without Supabase auth
+  const isDemo = request.cookies.get('solobite_demo')?.value === 'true';
 
-  // Protected routes: redirect to login if not authenticated
-  if (request.nextUrl.pathname.startsWith('/app') && !user) {
-    const loginUrl = new URL('/login', request.url);
-    return NextResponse.redirect(loginUrl);
+  if (request.nextUrl.pathname.startsWith('/app')) {
+    if (isDemo) {
+      return supabaseResponse;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      const loginUrl = new URL('/login', request.url);
+      return NextResponse.redirect(loginUrl);
+    }
   }
 
   return supabaseResponse;

@@ -1,11 +1,19 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const router = useRouter();
+
+  const handleTryDemo = () => {
+    localStorage.setItem('solobite_demo', 'true');
+    document.cookie = 'solobite_demo=true; path=/; max-age=86400';
+    router.push('/app');
+  };
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -125,6 +133,22 @@ export default function LoginPage() {
               {error}
             </div>
           )}
+
+          <div className="relative flex items-center gap-3 my-2">
+            <div className="flex-1 h-px bg-warm-200" />
+            <span className="text-xs text-warm-400">or</span>
+            <div className="flex-1 h-px bg-warm-200" />
+          </div>
+
+          <button
+            onClick={handleTryDemo}
+            className="w-full py-3 px-4 bg-brand-500 text-white rounded-xl font-medium hover:bg-brand-600 transition-all shadow-sm"
+          >
+            Try Demo — No Sign-in Needed
+          </button>
+          <p className="text-xs text-warm-400 text-center">
+            Explore with sample data. Sign in anytime to save your profile.
+          </p>
         </div>
 
         <p className="text-xs text-warm-400 mt-8 text-center max-w-xs">
