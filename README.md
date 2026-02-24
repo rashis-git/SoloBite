@@ -6,7 +6,7 @@
 
 AI-powered recipes built for **one** — personalized nutrition, zero waste, zero leftovers rotting in the back of your fridge.
 
-[![Next.js](https://img.shields.io/badge/Next.js_15-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js_16-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](#)
@@ -126,23 +126,26 @@ Open **http://localhost:3000** and start cooking! 🎉
 
 ```
 ┌─────────────────────────────────────────────────┐
+│               LANDING PAGE (/)                   │
+│  Hero + Features + Stats + How It Works + CTA    │
+│  → "Get Started" → /login (Google OAuth)         │
+└──────────────────────┬──────────────────────────┘
+                       ▼
+┌─────────────────────────────────────────────────┐
 │                  ONBOARDING                      │
 │  Name → Body Stats → Activity → Diet →           │
 │  Kitchen → Pantry (drag & drop) → Targets        │
 └──────────────────────┬──────────────────────────┘
                        ▼
 ┌─────────────────────────────────────────────────┐
-│               HOME SCREEN                        │
+│            HOME SCREEN (/app)                    │
 │                                                  │
-│  ┌──────────────────────────────────┐           │
-│  │  💬 What do you have? / 📸 / 🎤  │           │
-│  └──────────────────────────────────┘           │
-│                                                  │
-│  ⚡ Quick  💪 Protein  🍲 Comfort  🎲 Surprise  │
-│                                                  │
-│  🥡 Got leftovers? [Dal] [Rice] [Roti] [+]      │
-│                                                  │
-│  📅 Plan My Week                                 │
+│  ┌─────────────────────┐  ┌──────────────────┐  │
+│  │ 💬 Input / 📸 / 🎤   │  │ ⚡ Quick picks   │  │
+│  │ 🍲 Leftovers        │  │ 💪 Protein       │  │
+│  │ 📅 Plan My Week     │  │ 🍲 Comfort       │  │
+│  └─────────────────────┘  └──────────────────┘  │
+│     (main column)            (sidebar)           │
 └──────────────────────┬──────────────────────────┘
                        ▼
 ┌─────────────────────────────────────────────────┐
@@ -168,12 +171,24 @@ src/
 │   │   ├── generate-recipe/      🍽️  Profile + input → recipe
 │   │   ├── plan-week/            📅  7-day cross-optimized plan
 │   │   └── search-videos/        🎥  Recipe → YouTube links
-│   └── page.tsx                  🏠  Entry point
+│   ├── app/                      🔒  Auth-gated route group
+│   │   ├── page.tsx              🏠  Home screen
+│   │   └── settings/page.tsx     ⚙️  User settings
+│   ├── landing/page.tsx          🌐  Public landing page
+│   ├── login/page.tsx            🔑  Split-layout login
+│   ├── page.tsx                  🚦  Smart router (landing vs redirect)
+│   └── middleware.ts             🛡️  Route protection
 ├── components/
+│   ├── LandingPage.tsx           🌐  Landing page assembly
+│   ├── landing/                  🎨  7 landing sections
+│   │   ├── Navbar.tsx, Hero.tsx, Features.tsx,
+│   │   ├── Stats.tsx, HowItWorks.tsx,
+│   │   ├── CTASection.tsx, Footer.tsx
 │   ├── OnboardingWizard.tsx      📋  7-step nutrition setup
-│   ├── HomeScreen.tsx            🏠  Smart input + quick picks
-│   ├── RecipeCard.tsx            🍳  Recipe with nutrition rings
-│   ├── WeeklyPlanView.tsx        📅  Meal plan + grocery list
+│   ├── HomeScreen.tsx            🏠  Smart input (2-col desktop)
+│   ├── RecipeCard.tsx            🍳  Recipe + nutrition sidebar
+│   ├── WeeklyPlanView.tsx        📅  Multi-col meal plan
+│   ├── SettingsView.tsx          ⚙️  2-col settings grid
 │   └── NutritionRing.tsx         🔴  SVG ring visualization
 └── lib/
     ├── ai-client.ts              🤖  OpenRouter API wrapper
@@ -182,7 +197,8 @@ src/
     ├── pantry-defaults.ts        🏪  Staples by cuisine palette
     ├── demo-data.ts              🎭  Fallback demo recipes
     ├── types.ts                  📝  TypeScript interfaces
-    └── storage.ts                💾  localStorage helpers
+    ├── storage.ts                💾  Supabase profile persistence
+    └── supabase/                 🔐  Auth client + server helpers
 ```
 
 <br/>
@@ -191,12 +207,15 @@ src/
 
 | Layer | Technology | Why |
 |-------|-----------|-----|
-| **Framework** | Next.js 15 (App Router) | SSR + API routes in one project |
+| **Framework** | Next.js 16 (App Router) | SSR + API routes in one project |
 | **Language** | TypeScript | Type safety across the stack |
-| **Styling** | Tailwind CSS 4 | Rapid UI with zero CSS files |
+| **Styling** | Tailwind CSS 4 | `@theme inline` design tokens, utility-first |
+| **Typography** | Epilogue + DM Sans | Distinctive display + readable body pairing |
+| **Colors** | Amber / Teal / Cream | Warm food-app aesthetic (SepetBox-inspired) |
+| **Auth** | Supabase (Google OAuth) | Managed auth, server-side sessions |
 | **AI** | OpenRouter → Gemini 2.0 Flash | Fast, cheap, multimodal (text + images) |
 | **Videos** | YouTube Data API v3 | Recipe video search |
-| **Storage** | localStorage | No backend needed for MVP |
+| **Storage** | Supabase (profiles) + localStorage | Server-persisted profiles, local UI state |
 | **Deploy** | Vercel | One-click from GitHub |
 
 <br/>
@@ -208,6 +227,8 @@ src/
 3. Add environment variables:
    - `OPENROUTER_API_KEY`
    - `YOUTUBE_API_KEY`
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 4. Deploy ✅
 
 <br/>
